@@ -27,11 +27,12 @@ def upload_file():
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         
-        # Upload to S3
-        s3_path = upload_file_to_s3(file, filename)
+        # Analyze with ChatGPT first (using the file directly)
+        analysis = analyze_with_chatgpt(file)
         
-        # Analyze with ChatGPT
-        analysis = analyze_with_chatgpt(s3_path)
+        # Then upload to S3 (need to reset file pointer first)
+        file.seek(0)
+        s3_path = upload_file_to_s3(file, filename)
         
         return render_template('result.html', analysis=analysis)
     
