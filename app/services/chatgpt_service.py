@@ -1,10 +1,15 @@
-# app/services/chatgpt_service.py
-import openai
+from openai import OpenAI
 from flask import current_app
 import base64
 
+def truncate_content(content, max_chars=10000):
+    """Truncate content to a maximum number of characters"""
+    if len(content) > max_chars:
+        return content[:max_chars] + "\n...(content truncated due to length)..."
+    return content
+
 def analyze_with_chatgpt(file):
-    openai.api_key = current_app.config['OPENAI_API_KEY']
+    client = OpenAI(api_key=current_app.config['OPENAI_API_KEY'])
     
     try:
         # Read the file content
@@ -14,13 +19,16 @@ def analyze_with_chatgpt(file):
         # Try to decode as text, if fails, use base64
         try:
             content_str = file_content.decode('utf-8')
+            # Truncate content to avoid token limit
+            content_str = truncate_content(content_str)
         except UnicodeDecodeError:
-            # For binary files, encode as base64
-            content_str = f"[Binary file encoded in base64]: {base64.b64encode(file_content).decode('ascii')}"
+            # For binary files, encode as base64 and truncate
+            base64_str = base64.b64encode(file_content).decode('ascii')
+            content_str = f"[Binary file encoded in base64]: {truncate_content(base64_str)}"
         
         system_prompt = current_app.config['CHATGPT_PROMPT']
         
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="gpt-4",
             messages=[
                 {
@@ -32,10 +40,10 @@ def analyze_with_chatgpt(file):
                     "content": f"File name: {file_name}\n\nFile content:\n{content_str}"
                 }
             ],
-            max_tokens=4096
+            max_tokens=2048
         )
         
         file.seek(0)  # Reset file pointer for potential further use
-        return response['choices'][0]['message']['content']
+        return response.choices[0].message.content
     except Exception as e:
         raise Exception(f"Failed to analyze with ChatGPT: {str(e)}")
