@@ -1,10 +1,10 @@
 # app/services/chatgpt_service.py
-from openai import OpenAI
+import openai
 from flask import current_app
 import base64
 
 def analyze_with_chatgpt(file):
-    client = OpenAI(api_key=current_app.config['OPENAI_API_KEY'])
+    openai.api_key = current_app.config['OPENAI_API_KEY']
     
     try:
         # Read the file content
@@ -20,8 +20,8 @@ def analyze_with_chatgpt(file):
         
         system_prompt = current_app.config['CHATGPT_PROMPT']
         
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
             messages=[
                 {
                     "role": "system",
@@ -36,6 +36,6 @@ def analyze_with_chatgpt(file):
         )
         
         file.seek(0)  # Reset file pointer for potential further use
-        return response.choices[0].message.content
+        return response['choices'][0]['message']['content']
     except Exception as e:
         raise Exception(f"Failed to analyze with ChatGPT: {str(e)}")
