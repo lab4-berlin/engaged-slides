@@ -29,7 +29,7 @@ def analyze_with_chatgpt(file):
         system_prompt = current_app.config['CHATGPT_PROMPT']
         
         response = client.chat.completions.create(
-            model="gpt-4",
+            model="gpt-4-turbo-preview",  # Latest GPT-4 Turbo model
             messages=[
                 {
                     "role": "system",
@@ -40,7 +40,7 @@ def analyze_with_chatgpt(file):
                     "content": f"File name: {file_name}\n\nFile content:\n{content_str}"
                 }
             ],
-            max_tokens=2048
+            max_tokens=16384  # Maximum possible output tokens for GPT-4
         )
         
         file.seek(0)  # Reset file pointer for potential further use
