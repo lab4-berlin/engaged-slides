@@ -26,8 +26,8 @@ jobs:
       with:
         aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        application_name: your-app-name # Replace with your EB app name
-        environment_name: your-environment-name # Replace with your EB environment name
+        application_name: engaged-slides
+        environment_name: engaged-slides-env
         region: ${{ secrets.AWS_REGION }}
         deployment_package: deploy_package.zip
         version_label: ${{ github.sha }}
