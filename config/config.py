@@ -11,4 +11,4 @@ class Config:
     AWS_REGION = os.getenv('AWS_REGION', 'us-east-1')
     OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
     ALLOWED_EXTENSIONS = {'pdf', 'ppt', 'pptx', 'txt'}
-    CHATGPT_PROMPT = os.getenv('CHATGPT_PROMPT', 'Please analyze this document and provide a summary.')
+    CHATGPT_PROMPT = os.getenv('CHATGPT_PROMPT', 'Please analyze this document and provide 3 multiple choice questions for students to see if they follow the lecture, make it visually nice as html')
